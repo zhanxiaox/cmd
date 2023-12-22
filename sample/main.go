@@ -22,8 +22,8 @@ func main() {
 			fmt.Println(p)
 		},
 	}
-	download.AddFlag(cmd.Flag{Name: "--process", Value: uint64(1), Usage: "并发下载数"})
-	download.AddFlag(cmd.Flag{Name: "-p", Value: 1, Usage: "并发下载数"})
+	download.AddFlag(cmd.Flag{Name: "--process", Usage: "并发下载数"})
+	download.AddFlag(cmd.Flag{Name: "-p", Usage: "并发下载数"})
 	app.AddCommand(download)
 	app.Excute()
 }

@@ -24,7 +24,7 @@ type Command struct {
 
 type Flag struct {
 	Name  string
-	Value any
+	value string
 	Usage string
 }
 
@@ -75,17 +75,7 @@ func (this *App) Excute() {
 				input_flag_value := call_flag[k+1]
 
 				if a, ok := command.flags[v]; ok {
-
-					switch a.Value.(type) {
-					case int64:
-
-					case string:
-
-					case bool:
-					default:
-					}
-
-					a.Value = input_flag_value
+					a.value = input_flag_value
 					command.flags[v] = a
 				}
 			}
@@ -111,28 +101,24 @@ func (this *Command) mustGet(k string) (string, error) {
 	if !ok {
 		return "", errors.New("flag" + k + "not found")
 	}
-	a, ok := v.Value.(string)
-	if !ok {
-		return "", errors.New("flag value error,not string")
-	}
-	return a, nil
+	return v.value, nil
 }
 
-func (this *Command) shouldGet(k string) any {
+func (this *Command) shouldGet(k string) string {
 	v, _ := this.flags[k]
-	return v.Value
+	return v.value
 }
 
 func (this *Command) MustGetFlagInt64(k string) (int64, error) {
-	v, err := this.mustGet(k)
+	str, err := this.mustGet(k)
 	if err != nil {
 		return 0, err
 	}
-	i, err := strconv.ParseInt(v, 10, 64)
+	i64, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
 		return 0, err
 	}
-	return i, nil
+	return i64, nil
 }
 
 func (this *Command) MustGetFlagString(k string) (string, error) {
@@ -140,37 +126,29 @@ func (this *Command) MustGetFlagString(k string) (string, error) {
 }
 
 func (this *Command) MustGetFlagBool(k string) (bool, error) {
-	v, err := this.mustGet(k)
+	str, err := this.mustGet(k)
 	if err != nil {
 		return false, err
 	}
-	b, err := strconv.ParseBool(v)
+	b, err := strconv.ParseBool(str)
 	if err != nil {
 		return false, err
 	}
 	return b, nil
 }
 
-func (this *Command) ShouldGetFlagInt64(k string) uint64 {
-	a := this.shouldGet(k)
-	i64, ok := a.(uint64)
-	fmt.Println(i64)
-	if ok {
-		return i64
-	}
-	str, _ := a.(string)
-	i64, _ = strconv.ParseUint(str, 10, 64)
+func (this *Command) ShouldGetFlagInt64(k string) int64 {
+	str := this.shouldGet(k)
+	i64, _ := strconv.ParseInt(str, 10, 64)
 	return i64
 }
 
 func (this *Command) ShouldGetFlagString(k string) string {
-	a := this.shouldGet(k)
-	return a.(string)
+	return this.shouldGet(k)
 }
 
 func (this *Command) ShouldGetFlagBool(k string) bool {
-	a := this.shouldGet(k)
-	str, _ := a.(string)
+	str := this.shouldGet(k)
 	b, _ := strconv.ParseBool(str)
 	return b
 }
