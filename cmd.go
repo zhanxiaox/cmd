@@ -1,158 +1,76 @@
 package cmd
 
 import (
-	"errors"
-	"flag"
 	"fmt"
-	"strconv"
 )
 
 type App struct {
-	Name     string
-	Version  string
-	Desc     string
-	commands []Command
+	Name        string
+	Version     string
+	Desc        string
+	commands    map[string]Command
+	DefaultHelp bool
 }
 
 type Command struct {
-	Name  string
-	Desc  string
-	Help  func(*Command)
-	Run   func(*Command)
-	flags map[string]Flag
+	Name        string
+	Desc        string
+	Excute      func(*Command)
+	Flags       map[string]Flag
+	DefaultHelp bool
 }
 
 type Flag struct {
-	Name  string
-	value string
-	Usage string
-}
-
-func (this *App) Help() {
-	fmt.Println(this.Name, this.Version)
-	fmt.Println(this.Desc)
-	fmt.Println("")
-	fmt.Println("Usage:")
-	fmt.Println(this.Name, "[command] [flag]")
-	fmt.Println("")
-	fmt.Println("Available Commands:")
-	fmt.Println("download some balaaaa...")
-	fmt.Println("upload   some balaaaaaaa...")
-	fmt.Println("")
-	fmt.Println("Flags:")
-	fmt.Println("-h balaaaaaa...")
+	Name       string
+	value      string
+	Usage      string
+	Executable bool
+	Excute     func(*Command)
 }
 
 func (this *App) AddCommand(command Command) {
-	this.commands = append(this.commands, command)
+	if command.Flags == nil {
+		command.Flags = map[string]Flag{}
+	}
+	command.addDefaultHelpFlag()
+	this.commands[command.Name] = command
 }
+
+var args = getArgs()
 
 func (this *App) Excute() {
-	flag.Parse()
-	args := flag.Args()
-	if len(args) == 0 {
-		this.Help()
+	if args.Command == "" {
+		if command, ok := this.commands["help"]; ok {
+			command.Excute(&command)
+		} else {
+			fmt.Println(this.Name, "has not set help commands,if you want a default help,you can set cmd.New(*,*,*,true) to enable it or use addCommand to custom a help command")
+		}
 		return
 	}
 
-	call := false
-	call_command := args[0]
-	call_flag := args[1:]
-	if len(call_flag)%2 != 0 {
-		fmt.Println("flag param error,param must be key=value pair")
-		return
-	}
-
-	for _, command := range this.commands {
-		call = false
-		if command.Name == call_command {
-			call = true
-			for k, v := range call_flag {
-				if k%2 == 1 {
-					continue
-				}
-
-				input_flag_value := call_flag[k+1]
-
-				if a, ok := command.flags[v]; ok {
-					a.value = input_flag_value
-					command.flags[v] = a
+	if command, ok := this.commands[args.Command]; ok {
+		flExcutable := false
+		for k, v := range args.Flags {
+			if fl, ok := command.Flags[k]; ok {
+				fl.value = v
+				command.Flags[k] = fl
+				if fl.Executable {
+					flExcutable = true
+					fl.Excute(&command)
+					break
 				}
 			}
-			command.Run(&command)
 		}
-	}
-
-	if call == false {
-		fmt.Println("command", call_command, "not found")
-	}
-}
-
-func (this *Command) AddFlag(f Flag) {
-	if this.flags == nil {
-		this.flags = map[string]Flag{f.Name: f}
+		if !flExcutable {
+			command.Excute(&command)
+		}
 	} else {
-		this.flags[f.Name] = f
+		fmt.Println("command", args.Command, "not found,run", this.Name, "help to get more infomention")
 	}
 }
 
-func (this *Command) mustGet(k string) (string, error) {
-	v, ok := this.flags[k]
-	if !ok {
-		return "", errors.New("flag" + k + "not found")
-	}
-	return v.value, nil
-}
-
-func (this *Command) shouldGet(k string) string {
-	v, _ := this.flags[k]
-	return v.value
-}
-
-func (this *Command) MustGetFlagInt64(k string) (int64, error) {
-	str, err := this.mustGet(k)
-	if err != nil {
-		return 0, err
-	}
-	i64, err := strconv.ParseInt(str, 10, 64)
-	if err != nil {
-		return 0, err
-	}
-	return i64, nil
-}
-
-func (this *Command) MustGetFlagString(k string) (string, error) {
-	return this.mustGet(k)
-}
-
-func (this *Command) MustGetFlagBool(k string) (bool, error) {
-	str, err := this.mustGet(k)
-	if err != nil {
-		return false, err
-	}
-	b, err := strconv.ParseBool(str)
-	if err != nil {
-		return false, err
-	}
-	return b, nil
-}
-
-func (this *Command) ShouldGetFlagInt64(k string) int64 {
-	str := this.shouldGet(k)
-	i64, _ := strconv.ParseInt(str, 10, 64)
-	return i64
-}
-
-func (this *Command) ShouldGetFlagString(k string) string {
-	return this.shouldGet(k)
-}
-
-func (this *Command) ShouldGetFlagBool(k string) bool {
-	str := this.shouldGet(k)
-	b, _ := strconv.ParseBool(str)
-	return b
-}
-
-func New(name, version, desc string) *App {
-	return &App{Name: name, Version: version, Desc: desc}
+func New(name, version, desc string, defaultHelp bool) *App {
+	app := &App{Name: name, Version: version, Desc: desc, DefaultHelp: defaultHelp, commands: map[string]Command{}}
+	app.addDefaultHelpCommand()
+	return app
 }
