@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/zhanxiaox/cmd"
 )
 
@@ -17,12 +15,12 @@ func init() {
 			// }},
 		},
 		Excute: func(this *cmd.Command) {
-			p, err := this.MustGetFlagInt64("--process")
-			if err != nil {
-				fmt.Println(err.Error())
-				return
-			}
-			fmt.Println(p)
+			// p, err := this.MustGetFlagInt64("--process")
+			// if err != nil {
+			// 	fmt.Println(err.Error())
+			// 	return
+			// }
+			// fmt.Println(p)
 		},
 	}
 

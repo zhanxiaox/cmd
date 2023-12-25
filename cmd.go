@@ -4,12 +4,12 @@ import (
 	"fmt"
 )
 
-type App struct {
-	Name        string
-	Version     string
-	Desc        string
+type app struct {
+	name        string
+	version     string
+	desc        string
 	commands    map[string]Command
-	DefaultHelp bool
+	defaultHelp bool
 }
 
 type Command struct {
@@ -21,14 +21,13 @@ type Command struct {
 }
 
 type Flag struct {
-	Name       string
-	value      string
-	Usage      string
-	Executable bool
-	Excute     func(*Command)
+	Name   string
+	value  string
+	Usage  string
+	Excute func(*Command)
 }
 
-func (this *App) AddCommand(command Command) {
+func (this *app) AddCommand(command Command) {
 	if command.Flags == nil {
 		command.Flags = map[string]Flag{}
 	}
@@ -38,12 +37,12 @@ func (this *App) AddCommand(command Command) {
 
 var args = getArgs()
 
-func (this *App) Excute() {
+func (this *app) Excute() {
 	if args.Command == "" {
 		if command, ok := this.commands["help"]; ok {
 			command.Excute(&command)
 		} else {
-			fmt.Println(this.Name, "has not set help commands,if you want a default help,you can set cmd.New(*,*,*,true) to enable it or use addCommand to custom a help command")
+			fmt.Println(this.name, "has not set help commands,if you want a default help,you can set cmd.New(*,*,*,true) to enable it or use addCommand to custom a help command")
 		}
 		return
 	}
@@ -54,7 +53,7 @@ func (this *App) Excute() {
 			if fl, ok := command.Flags[k]; ok {
 				fl.value = v
 				command.Flags[k] = fl
-				if fl.Executable {
+				if fl.Excute != nil {
 					flExcutable = true
 					fl.Excute(&command)
 					break
@@ -65,12 +64,12 @@ func (this *App) Excute() {
 			command.Excute(&command)
 		}
 	} else {
-		fmt.Println("command", args.Command, "not found,run", this.Name, "help to get more infomention")
+		fmt.Println("command", args.Command, "not found,run", this.name, "help to get more infomention")
 	}
 }
 
-func New(name, version, desc string, defaultHelp bool) *App {
-	app := &App{Name: name, Version: version, Desc: desc, DefaultHelp: defaultHelp, commands: map[string]Command{}}
-	app.addDefaultHelpCommand()
-	return app
+func New(name, version, desc string, defaultHelp bool) *app {
+	instace := &app{name: name, version: version, desc: desc, defaultHelp: defaultHelp, commands: map[string]Command{}}
+	instace.addDefaultHelpCommand()
+	return instace
 }

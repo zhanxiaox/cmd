@@ -2,8 +2,8 @@ package cmd
 
 import "fmt"
 
-func (this *App) addDefaultHelpCommand() {
-	if this.DefaultHelp {
+func (this *app) addDefaultHelpCommand() {
+	if this.defaultHelp {
 		if _, ok := this.commands["help"]; !ok {
 			this.AddCommand(Command{Name: "help", Desc: "default help for this app,you can overide this with addCommand", Excute: func(cmd *Command) {
 				this.helpApp()
@@ -15,19 +15,19 @@ func (this *App) addDefaultHelpCommand() {
 func (this *Command) addDefaultHelpFlag() {
 	if this.DefaultHelp {
 		if _, ok := this.Flags["-h"]; !ok {
-			this.Flags["-h"] = Flag{Name: "help", Usage: "default help for this command", Executable: true, Excute: func(this *Command) {
+			this.Flags["-h"] = Flag{Name: "help", Usage: "default help for this command", Excute: func(this *Command) {
 				this.helpCommad()
 			}}
 		}
 	}
 }
 
-func (this *App) helpApp() {
-	fmt.Println(this.Name, this.Version)
-	fmt.Println(this.Desc)
+func (this *app) helpApp() {
+	fmt.Println(this.name, this.version)
+	fmt.Println(this.desc)
 	fmt.Println()
 	fmt.Println("Usage:")
-	fmt.Println(this.Name, "[command] [flag]")
+	fmt.Println(this.name, "[command] [flag]")
 	fmt.Println()
 	fmt.Println("Available Commands:")
 	for _, command := range this.commands {
