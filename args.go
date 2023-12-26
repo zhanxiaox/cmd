@@ -13,7 +13,9 @@ type osArgs struct {
 }
 
 func getArgs() osArgs {
-	args := osArgs{Flags: map[string]string{}}
+	args := osArgs{
+		Flags: map[string]string{},
+	}
 	for k, v := range os.Args {
 		if k == 0 {
 			args.Path = v
@@ -36,7 +38,7 @@ func (this *Command) mustGet(k string) (string, error) {
 	if ok {
 		return v.value, nil
 	}
-	return "", errors.New("must get fail: " + k + " not found")
+	return "", errors.New("mustGet fail: " + k + " not found")
 }
 
 func (this *Command) shouldGet(k string) string {
@@ -47,11 +49,11 @@ func (this *Command) shouldGet(k string) string {
 func (this *Command) MustGetFlagInt64(k string) (int64, error) {
 	str, err := this.mustGet(k)
 	if err != nil {
-		return 0, errors.New("must get int64 fail: " + err.Error())
+		return 0, errors.New("MustGetFlagInt64 fail: " + err.Error())
 	}
 	i64, err := strconv.ParseInt(str, 10, 64)
 	if err != nil {
-		return 0, errors.New("must get int64 fail: when parse int64 value = " + str + ",error:" + err.Error())
+		return 0, errors.New("MustGetFlagInt64 fail: when parse int64 value = " + str + ",error:" + err.Error())
 	}
 	return i64, nil
 }
@@ -63,11 +65,11 @@ func (this *Command) MustGetFlagString(k string) (string, error) {
 func (this *Command) MustGetFlagBool(k string) (bool, error) {
 	str, err := this.mustGet(k)
 	if err != nil {
-		return false, errors.New("must get bool fail: " + err.Error())
+		return false, errors.New("MustGetFlagBool fail: " + err.Error())
 	}
 	b, err := strconv.ParseBool(str)
 	if err != nil {
-		return false, errors.New("must get bool fail: when parse bool value = " + str + ",error:" + err.Error())
+		return false, errors.New("MustGetFlagBool fail: when parse bool value = " + str + ",error:" + err.Error())
 	}
 	return b, err
 }

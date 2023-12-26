@@ -9,18 +9,18 @@ import (
 func init() {
 	downloadCmd := cmd.Command{
 		Name:        "download",
-		Desc:        "download basic file form vesdk",
+		Desc:        "download file form cloud",
 		DefaultHelp: true,
 		Flags: map[string]cmd.Flag{
 			"-p": {Name: "process", Usage: "download threads(1-10)"},
 		},
-		Excute: func(this *cmd.Command) {
+		Excute: func(this cmd.Command) error {
 			p, err := this.MustGetFlagInt64("-p")
 			if err != nil {
-				fmt.Println("mustget error:", err.Error())
-				return
+				return err
 			}
-			fmt.Println(p)
+			app.Info("start download files with " + fmt.Sprint(p) + " threads")
+			return nil
 		},
 	}
 

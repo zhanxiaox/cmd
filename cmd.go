@@ -1,21 +1,22 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 )
 
-type app struct {
-	name        string
-	version     string
-	desc        string
+type App struct {
+	Name        string
+	Version     string
+	Desc        string
 	commands    map[string]Command
-	defaultHelp bool
+	DefaultHelp bool
 }
 
 type Command struct {
 	Name        string
 	Desc        string
-	Excute      func(*Command)
+	Excute      func(Command) error
 	Flags       map[string]Flag
 	DefaultHelp bool
 }
@@ -24,52 +25,49 @@ type Flag struct {
 	Name   string
 	value  string
 	Usage  string
-	Excute func(*Command)
+	Excute func(Command) error
 }
 
-func (this *app) AddCommand(command Command) {
+func (this *App) AddCommand(command Command) {
 	if command.Flags == nil {
 		command.Flags = map[string]Flag{}
 	}
-	command.addDefaultHelpFlag()
+	if command.DefaultHelp {
+		command.addDefaultHelpFlag()
+	}
 	this.commands[command.Name] = command
 }
 
 var args = getArgs()
 
-func (this *app) Excute() {
+func (this App) Excute() error {
 	if args.Command == "" {
 		if command, ok := this.commands["help"]; ok {
-			command.Excute(&command)
+			return command.Excute(command)
 		} else {
-			fmt.Println(this.name, "has not set help commands,if you want a default help,you can set cmd.New(*,*,*,true) to enable it or use addCommand to custom a help command")
+			return errors.New(fmt.Sprint(this.Name, "has not set help command or default help command,if you want a default help,you can set cmd.New(cmd.App{DefaultHelp:true}) to enable it or use addCommand to custom a help command"))
 		}
-		return
 	}
-
 	if command, ok := this.commands[args.Command]; ok {
-		flExcutable := false
 		for k, v := range args.Flags {
 			if fl, ok := command.Flags[k]; ok {
 				fl.value = v
 				command.Flags[k] = fl
 				if fl.Excute != nil {
-					flExcutable = true
-					fl.Excute(&command)
-					break
+					return fl.Excute(command)
 				}
 			}
 		}
-		if !flExcutable {
-			command.Excute(&command)
-		}
+		return command.Excute(command)
 	} else {
-		fmt.Println("command", args.Command, "not found,run", this.name, "help to get more infomention")
+		return errors.New(fmt.Sprint("command ", args.Command, " not found,run ", this.Name, " help to get more infomention"))
 	}
 }
 
-func New(name, version, desc string, defaultHelp bool) *app {
-	instace := &app{name: name, version: version, desc: desc, defaultHelp: defaultHelp, commands: map[string]Command{}}
-	instace.addDefaultHelpCommand()
-	return instace
+func New(this App) App {
+	this.commands = map[string]Command{}
+	if this.DefaultHelp {
+		this.addDefaultHelpCommand()
+	}
+	return this
 }

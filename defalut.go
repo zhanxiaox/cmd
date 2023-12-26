@@ -2,32 +2,34 @@ package cmd
 
 import "fmt"
 
-func (this *app) addDefaultHelpCommand() {
-	if this.defaultHelp {
-		if _, ok := this.commands["help"]; !ok {
-			this.AddCommand(Command{Name: "help", Desc: "default help for this app,you can overide this with addCommand", Excute: func(cmd *Command) {
-				this.helpApp()
-			}})
-		}
+func (this App) addDefaultHelpCommand() {
+	this.AddCommand(Command{
+		Name: "help",
+		Desc: "default help for this app,you can override this with app.AddCommand(cmd.Command{Name:'help',...})",
+		Excute: func(cmd Command) error {
+			this.defaultHelpApp()
+			return nil
+		},
+	})
+}
+
+func (this Command) addDefaultHelpFlag() {
+	this.Flags["-h"] = Flag{
+		Name:  "help",
+		Usage: "default help for this command,you can override this with cmd.Command{Flags:map[string]cmd.Flag{Name:'-h',...}}",
+		Excute: func(this Command) error {
+			this.defaultHelpCommad()
+			return nil
+		},
 	}
 }
 
-func (this *Command) addDefaultHelpFlag() {
-	if this.DefaultHelp {
-		if _, ok := this.Flags["-h"]; !ok {
-			this.Flags["-h"] = Flag{Name: "help", Usage: "default help for this command", Excute: func(this *Command) {
-				this.helpCommad()
-			}}
-		}
-	}
-}
-
-func (this *app) helpApp() {
-	fmt.Println(this.name, this.version)
-	fmt.Println(this.desc)
+func (this App) defaultHelpApp() {
+	fmt.Println(this.Name, this.Version)
+	fmt.Println(this.Desc)
 	fmt.Println()
 	fmt.Println("Usage:")
-	fmt.Println(this.name, "[command] [flag]")
+	fmt.Println(this.Name, "[command] [flag]")
 	fmt.Println()
 	fmt.Println("Available Commands:")
 	for _, command := range this.commands {
@@ -42,11 +44,10 @@ func (this *app) helpApp() {
 				fmt.Println(generateSpace(2), k, generateSpace(16-len(k)), fl.Usage)
 			}
 		}
-
 	}
 }
 
-func (this *Command) helpCommad() {
+func (this Command) defaultHelpCommad() {
 	fmt.Println("Usage:")
 	fmt.Println(args.Path, "[command] [flag]")
 	fmt.Println()
