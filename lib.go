@@ -12,10 +12,10 @@ func generateSpace(i int) string {
 	return space
 }
 
-func (this App) Info(s string) {
+func (this app) Info(s string) {
 	fmt.Println("[INFO]:", s)
 }
 
-func (this App) Warn(s string) {
+func (this app) Warn(s string) {
 	fmt.Println("[WARN]:", s)
 }

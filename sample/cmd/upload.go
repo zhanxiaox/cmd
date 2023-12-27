@@ -6,9 +6,8 @@ import (
 
 func init() {
 	uploadCmd := cmd.Command{
-		Name:        "upload",
-		Desc:        "upload file to cloud",
-		DefaultHelp: false,
+		Name: "upload",
+		Desc: "upload file to cloud",
 		Excute: func(this cmd.Command) error {
 			return nil
 		},

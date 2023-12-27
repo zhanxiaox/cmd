@@ -2,34 +2,12 @@ package cmd
 
 import "fmt"
 
-func (this App) addDefaultHelpCommand() {
-	this.AddCommand(Command{
-		Name: "help",
-		Desc: "default help for this app,you can override this with app.AddCommand(cmd.Command{Name:'help',...})",
-		Excute: func(cmd Command) error {
-			this.defaultHelpApp()
-			return nil
-		},
-	})
-}
-
-func (this Command) addDefaultHelpFlag() {
-	this.Flags["-h"] = Flag{
-		Name:  "help",
-		Usage: "default help for this command,you can override this with cmd.Command{Flags:map[string]cmd.Flag{Name:'-h',...}}",
-		Excute: func(this Command) error {
-			this.defaultHelpCommad()
-			return nil
-		},
-	}
-}
-
-func (this App) defaultHelpApp() {
+func (this app) DefaultHelp() error {
 	fmt.Println(this.Name, this.Version)
 	fmt.Println(this.Desc)
 	fmt.Println()
 	fmt.Println("Usage:")
-	fmt.Println(this.Name, "[command] [flag]")
+	fmt.Println(args.Path, "[command] [flag]")
 	fmt.Println()
 	fmt.Println("Available Commands:")
 	for _, command := range this.commands {
@@ -45,9 +23,10 @@ func (this App) defaultHelpApp() {
 			}
 		}
 	}
+	return nil
 }
 
-func (this Command) defaultHelpCommad() {
+func (this Command) DefaultHelp() error {
 	fmt.Println("Usage:")
 	fmt.Println(args.Path, "[command] [flag]")
 	fmt.Println()
@@ -61,4 +40,5 @@ func (this Command) defaultHelpCommad() {
 			fmt.Println(generateSpace(2), k, generateSpace(16-len(k)), fl.Usage)
 		}
 	}
+	return nil
 }
