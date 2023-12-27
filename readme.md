@@ -26,6 +26,11 @@ Create a app
 
 ```go
 app := cmd.New()
+
+// this is optional config
+app.Name = "fsync"
+app.Version = "0.0.1"
+app.Desc = "fsync is a ..."
 ```
 
 Add a command
