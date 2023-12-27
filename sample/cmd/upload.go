@@ -1,8 +1,6 @@
 package cmd
 
-import (
-	"github.com/zhanxiaox/cmd"
-)
+import "github.com/zhanxiaox/cmd"
 
 func init() {
 	uploadCmd := cmd.Command{

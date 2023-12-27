@@ -9,7 +9,7 @@ import (
 func init() {
 	downloadCmd := cmd.Command{
 		Name: "download",
-		Desc: "download file form cloud",
+		Desc: "download file from cloud",
 		Flags: map[string]cmd.Flag{
 			"-p": {Name: "process", Usage: "download threads(1-10)"},
 			"-h": {Name: "help", Usage: "help this command", Excute: func(this cmd.Command) error {
