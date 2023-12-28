@@ -9,9 +9,9 @@ import (
 func init() {
 	versionCmd := cmd.Command{
 		Name: "version",
-		Desc: "show app version",
+		Desc: "Show app version",
 		Flags: map[string]cmd.Flag{
-			"-h": {Name: "help", Usage: "print this message", Excute: func(this cmd.Command) error {
+			"-h": {Name: "help", Usage: "Print this message", Excute: func(this cmd.Command) error {
 				fmt.Println(this.Flags["-h"].Usage)
 				app.Info(this.Flags["-h"].Usage)
 				return nil
