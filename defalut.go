@@ -14,15 +14,16 @@ func (this app) DefaultHelp() error {
 		fmt.Println(command.Name, generateSpace(20-len(command.Name)), command.Desc)
 	}
 	fmt.Println()
-	fmt.Println("Available Flags:")
-	for _, command := range this.commands {
-		if len(command.Flags) > 0 {
-			fmt.Println(command.Name)
-			for k, fl := range command.Flags {
-				fmt.Println(generateSpace(2), k, generateSpace(16-len(k)), fl.Usage)
-			}
-		}
-	}
+	fmt.Println(`Use "` + args.Path + ` [command] --help" for more information about a command.`)
+	// fmt.Println("Available Flags:")
+	// for _, command := range this.commands {
+	// 	if len(command.Flags) > 0 {
+	// 		fmt.Println(command.Name)
+	// 		for k, fl := range command.Flags {
+	// 			fmt.Println(generateSpace(2), k, generateSpace(16-len(k)), fl.Usage)
+	// 		}
+	// 	}
+	// }
 	return nil
 }
 

@@ -52,9 +52,6 @@ app.AddCommand(cmd.Command{
 })
 ```
 
-It willbe like this  
-![add_single_command](assets/add_simple_command.png)
-
 Or you can add more complete
 
 ```go
@@ -86,9 +83,6 @@ app.AddCommand(cmd.Command{
 			return nil
 		},)
 ```
-
-It will be like this  
-![add_download_command](assets/add_download_commands.png)
 
 More usage in sample
 
